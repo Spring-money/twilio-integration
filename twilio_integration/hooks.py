@@ -13,7 +13,8 @@ app_license = "MIT"
 fixtures = [{"dt": "Custom Field", "filters": [
 		[
 			"name", "in", [
-				"Notification-twilio_number", "Voice Call Settings-twilio_number"
+				"Notification-twilio_number", "Voice Call Settings-twilio_number",
+				"Notification-use_whatsapp_template", "Notification-whatsapp_template"
 			]
 		]
 	]}

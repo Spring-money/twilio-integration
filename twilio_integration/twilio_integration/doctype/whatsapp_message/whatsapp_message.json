@@ -13,6 +13,12 @@
   "media_link",
   "status",
   "send_on",
+  "template_section",
+  "template_mode",
+  "whatsapp_template",
+  "content_sid",
+  "content_variables",
+  "reference_section",
   "reference_doctype",
   "reference_document_name",
   "profile_name"
@@ -82,13 +88,51 @@
    "fieldname": "profile_name",
    "fieldtype": "Data",
    "label": "Profile Name"
+  },
+  {
+   "fieldname": "template_section",
+   "fieldtype": "Section Break",
+   "label": "Template Information"
+  },
+  {
+   "default": "0",
+   "fieldname": "template_mode",
+   "fieldtype": "Check",
+   "label": "Template Mode",
+   "description": "Message sent using WhatsApp Business template"
+  },
+  {
+   "depends_on": "template_mode",
+   "fieldname": "whatsapp_template",
+   "fieldtype": "Link",
+   "label": "WhatsApp Template",
+   "options": "WhatsApp Message Template"
+  },
+  {
+   "depends_on": "template_mode",
+   "fieldname": "content_sid",
+   "fieldtype": "Data",
+   "label": "Content SID",
+   "description": "Twilio Content SID used for template message"
+  },
+  {
+   "depends_on": "template_mode",
+   "fieldname": "content_variables",
+   "fieldtype": "JSON",
+   "label": "Content Variables",
+   "description": "Variables passed to template"
+  },
+  {
+   "fieldname": "reference_section",
+   "fieldtype": "Section Break",
+   "label": "Reference"
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
  "max_attachments": 1,
- "modified": "2021-07-08 01:09:24.002941",
+ "modified": "2025-01-12 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "Twilio Integration",
  "name": "WhatsApp Message",

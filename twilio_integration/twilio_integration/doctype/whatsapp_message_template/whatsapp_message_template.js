@@ -2,7 +2,13 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('WhatsApp Message Template', {
-	// refresh: function(frm) {
-
-	// }
+	refresh: function(frm) {
+		// Add help text
+		if (frm.doc.message && frm.doc.message.includes('{{')) {
+			frm.dashboard.add_comment(
+				__('Template uses variables like {{1}}, {{2}}, etc. Add corresponding rows in the Variables table.'),
+				'blue'
+			);
+		}
+	}
 });

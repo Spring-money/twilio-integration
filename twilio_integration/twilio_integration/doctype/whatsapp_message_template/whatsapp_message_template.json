@@ -7,8 +7,15 @@
  "engine": "InnoDB",
  "field_order": [
   "template_name",
+  "content_sid",
+  "template_status",
+  "column_break_3",
   "module",
-  "message"
+  "language",
+  "section_break_6",
+  "message",
+  "variables_section",
+  "template_variables"
  ],
  "fields": [
   {
@@ -18,20 +25,60 @@
    "unique": 1
   },
   {
+   "fieldname": "content_sid",
+   "fieldtype": "Data",
+   "label": "Content SID",
+   "description": "Twilio Content SID for approved WhatsApp template"
+  },
+  {
+   "default": "Draft",
+   "fieldname": "template_status",
+   "fieldtype": "Select",
+   "label": "Template Status",
+   "options": "Draft\nApproved\nRejected\nPending"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "module",
    "fieldtype": "Link",
    "label": "Module",
    "options": "Module Def"
   },
   {
+   "default": "en",
+   "fieldname": "language",
+   "fieldtype": "Data",
+   "label": "Language Code",
+   "description": "Language code (e.g., en, es, fr)"
+  },
+  {
+   "fieldname": "section_break_6",
+   "fieldtype": "Section Break"
+  },
+  {
    "fieldname": "message",
-   "fieldtype": "Text",
-   "label": "Message"
+   "fieldtype": "Long Text",
+   "label": "Template Message",
+   "description": "Template message with variables marked as {{1}}, {{2}}, etc."
+  },
+  {
+   "fieldname": "variables_section",
+   "fieldtype": "Section Break",
+   "label": "Template Variables"
+  },
+  {
+   "fieldname": "template_variables",
+   "fieldtype": "Table",
+   "label": "Variables",
+   "options": "WhatsApp Template Variable"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2021-06-24 23:06:31.692896",
+ "modified": "2025-01-12 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "Twilio Integration",
  "name": "WhatsApp Message Template",

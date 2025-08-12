@@ -134,6 +134,98 @@ def whatsapp_message_status_callback(**kwargs):
 	"""This is a webhook called by Twilio whenever sent WhatsApp message status is changed.
 	"""
 	args = frappe._dict(kwargs)
-	if frappe.db.exists({'doctype': 'WhatsApp Message', 'id': args.MessageSid, 'from_': args.From, 'to': args.To}):
-		message = frappe.get_doc('WhatsApp Message', {'id': args.MessageSid, 'from_': args.From, 'to': args.To})
-		message.db_set('status', args.MessageStatus.title())
+	try:
+		if frappe.db.exists({'doctype': 'WhatsApp Message', 'id': args.MessageSid, 'from_': args.From, 'to': args.To}):
+			message = frappe.get_doc('WhatsApp Message', {'id': args.MessageSid, 'from_': args.From, 'to': args.To})
+			
+			# Update status with enhanced error handling
+			new_status = args.MessageStatus.title()
+			message.db_set('status', new_status)
+			
+			# Log template-related errors specifically
+			if new_status == 'Failed' and hasattr(args, 'ErrorCode'):
+				error_details = f"Error Code: {args.ErrorCode}"
+				if hasattr(args, 'ErrorMessage'):
+					error_details += f", Message: {args.ErrorMessage}"
+				
+				# Check for template-specific errors
+				if args.ErrorCode == '63016':
+					error_details += " - This error occurs when sending freeform messages outside the 24-hour window. Use WhatsApp Template mode instead."
+				
+				frappe.log_error(
+					title=f"WhatsApp Message Failed - {args.MessageSid}",
+					message=error_details
+				)
+			
+			frappe.db.commit()
+	except Exception as e:
+		frappe.log_error(
+			title="WhatsApp Status Callback Error",
+			message=f"Failed to process status callback: {str(e)}\nArgs: {args}"
+		)
+
+@frappe.whitelist()
+def get_approved_whatsapp_templates():
+	"""Get list of approved WhatsApp templates for notifications"""
+	return frappe.get_all(
+		'WhatsApp Message Template',
+		filters={'template_status': 'Approved'},
+		fields=['name', 'template_name', 'content_sid', 'message']
+	)
+
+@frappe.whitelist()
+def test_whatsapp_template(template_name, test_variables=None):
+	"""Test WhatsApp template with sample variables"""
+	if not template_name:
+		return {"success": False, "message": "Template name is required"}
+	
+	try:
+		template_doc = frappe.get_doc('WhatsApp Message Template', template_name)
+		
+		if template_doc.template_status != 'Approved':
+			return {"success": False, "message": "Template is not approved"}
+		
+		if not template_doc.content_sid:
+			return {"success": False, "message": "Template does not have Content SID"}
+		
+		# Prepare test variables
+		if test_variables:
+			import json
+			if isinstance(test_variables, str):
+				test_variables = json.loads(test_variables)
+		else:
+			test_variables = {}
+		
+		# Get content variables for template
+		content_vars = template_doc.get_content_variables(test_variables)
+		
+		return {
+			"success": True,
+			"template_name": template_doc.template_name,
+			"content_sid": template_doc.content_sid,
+			"content_variables": content_vars,
+			"message": template_doc.message
+		}
+	
+	except Exception as e:
+		return {"success": False, "message": str(e)}
+
+@frappe.whitelist()
+def check_session_window(phone_number):
+	"""Check if phone number is within 24-hour session window"""
+	from twilio_integration.twilio_integration.doctype.whatsapp_message.whatsapp_message import WhatsAppMessage
+	
+	if not phone_number:
+		return {"in_session": False, "message": "Phone number is required"}
+	
+	# Ensure proper WhatsApp format
+	if not phone_number.startswith('whatsapp:'):
+		phone_number = f'whatsapp:{phone_number}'
+	
+	in_session = WhatsAppMessage.is_in_session_window(phone_number)
+	
+	return {
+		"in_session": in_session,
+		"phone_number": phone_number,
+		"message": "Within 24-hour window" if in_session else "Outside 24-hour window - template required"
+	}
