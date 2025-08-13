@@ -101,6 +101,7 @@ class WhatsAppMessage(Document):
 		
 		message_doc = {
 			'doctype': 'WhatsApp Message',
+			'type': 'Outgoing',
 			'from_': 'whatsapp:{}'.format(sender),
 			'to': 'whatsapp:{}'.format(to),
 			'message': message,
@@ -157,6 +158,7 @@ class WhatsAppMessage(Document):
 def incoming_message_callback(args):
 	wa_msg = frappe.get_doc({
 			'doctype': 'WhatsApp Message',
+			'type': 'Incoming',
 			'from_': args.From,
 			'to': args.To,
 			'message': args.Body,

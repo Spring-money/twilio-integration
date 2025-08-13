@@ -6,6 +6,7 @@
  "engine": "InnoDB",
  "field_order": [
   "id",
+  "type",
   "sent_received",
   "from_",
   "to",
@@ -28,6 +29,13 @@
    "fieldname": "id",
    "fieldtype": "Data",
    "label": "ID"
+  },
+  {
+   "default": "Outgoing",
+   "fieldname": "type",
+   "fieldtype": "Select",
+   "label": "Type",
+   "options": "Incoming\nOutgoing"
   },
   {
    "fieldname": "to",
