@@ -107,7 +107,10 @@ class WhatsAppMessage(Document):
 			'message': message,
 			'reference_doctype': doctype,
 			'reference_document_name': docname,
-			'media_link': media
+			'reference_name': docname,  # CRM app expects this field
+			'media_link': media,
+			'content_type': 'text',
+			'message_type': 'Text'
 		}
 		
 		# Add template information if provided
@@ -166,5 +169,8 @@ def incoming_message_callback(args):
 			'sent_received': args.SmsStatus.title(),
 			'id': args.MessageSid,
 			'send_on': frappe.utils.now(),
-			'status': 'Received'
+			'status': 'Received',
+			'content_type': 'text',
+			'message_type': 'Text',
+			'message_id': args.MessageSid
 		}).insert(ignore_permissions=True)
